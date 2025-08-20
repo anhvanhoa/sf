@@ -21,6 +21,7 @@ type MultiSelectProps = {
     onChange?: (value: string[]) => void
     textSearch?: string
     variant?: 'secondary' | 'default'
+    maxLength?: number
 }
 
 export function MultiSelect({
@@ -32,7 +33,8 @@ export function MultiSelect({
     value,
     onChange,
     textSearch = 'Search...',
-    variant = 'default'
+    variant = 'default',
+    maxLength = 14
 }: MultiSelectProps) {
     const [open, setOpen] = React.useState(false)
     const valueSelected = options.filter((item) => value?.includes(item.value))
@@ -42,6 +44,7 @@ export function MultiSelect({
         const isSelected = currentValues.includes(selectedValue)
         onChange(isSelected ? currentValues.filter((v) => v !== selectedValue) : [...currentValues, selectedValue])
     }
+    const text = valueSelected.map((item) => item.label).join(', ')
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -51,13 +54,18 @@ export function MultiSelect({
                     aria-expanded={open}
                     className={cn('justify-between h-auto', classTrigger)}
                 >
-                    {valueSelected.length > 0 && valueSelected.map((item) => item.label).join(', ')}
+                    {valueSelected.length > 0 && (
+                        <span className='line-clamp-1'>
+                            {text.slice(0, maxLength)}
+                            {text.length > maxLength && '...'}
+                        </span>
+                    )}
                     {!valueSelected.length && <span className='text-muted-foreground font-normal'>{placeholder}</span>}
                     <ChevronDown className='opacity-50' />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className={cn('p-0', className)} side='bottom' align='end'>
-                <Command>
+            <PopoverContent className={cn('p-0 rounded-xl', className)} side='bottom' align='end'>
+                <Command className='rounded-xl'>
                     <CommandInput placeholder={textSearch} className='h-9' />
                     <CommandList>
                         <CommandEmpty className='text-muted-foreground font-normal text-sm py-3 text-center'>

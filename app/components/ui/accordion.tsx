@@ -24,7 +24,7 @@ function AccordionTrigger({ className, children, ...props }: React.ComponentProp
                 data-slot='accordion-trigger'
                 // [&[data-state=open]>svg]:rotate-180
                 className={cn(
-                    'flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50',
+                    'flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50',
                     className
                 )}
                 {...props}
