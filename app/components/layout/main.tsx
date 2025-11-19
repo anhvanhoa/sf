@@ -4,14 +4,16 @@ import { Separator } from '@/components/ui/separator'
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import { Outlet } from 'react-router'
+import { Link, Outlet, useLocation } from 'react-router'
+import { getBreadcrumbs } from '@/lib/lib'
 
 export default function Main() {
+    const { pathname } = useLocation()
+    const breadcrumbs = getBreadcrumbs(pathname)
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -22,13 +24,27 @@ export default function Main() {
                         <Separator orientation='vertical' className='mr-2 data-[orientation=vertical]:h-4' />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem className='hidden md:block'>
-                                    <BreadcrumbLink href='#'>Building Your Application</BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className='hidden md:block' />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                                </BreadcrumbItem>
+                                {breadcrumbs.map((breadcrumb) => {
+                                    if (breadcrumb.href === pathname) {
+                                        return (
+                                            <BreadcrumbItem key={breadcrumb.href}>
+                                                <BreadcrumbPage className='first-letter:uppercase'>
+                                                    {breadcrumb.label}
+                                                </BreadcrumbPage>
+                                            </BreadcrumbItem>
+                                        )
+                                    }
+                                    return (
+                                        <div key={breadcrumb.href} className='flex items-center gap-x-2.5'>
+                                            <BreadcrumbItem>
+                                                <Link to={breadcrumb.href} className='first-letter:uppercase'>
+                                                    {breadcrumb.label}
+                                                </Link>
+                                            </BreadcrumbItem>
+                                            <BreadcrumbSeparator className='hidden md:block' />
+                                        </div>
+                                    )
+                                })}
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>

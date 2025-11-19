@@ -1,3 +1,4 @@
+import type { Route } from './+types/index'
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -127,6 +128,13 @@ const data: Plot[] = [
     }
 ]
 
+export function meta({}: Route.MetaArgs) {
+    return [
+        { title: 'Quản lý lô trồng' },
+        { name: 'description', content: 'Quản lý và theo dõi các lô trồng trong hệ thống nông nghiệp thông minh' }
+    ]
+}
+
 const Plots = () => {
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({})
@@ -170,7 +178,7 @@ const Plots = () => {
                                 <AddPlot />
                                 <AccordionTrigger asChild>
                                     <Button
-                                        className='rounded-full gap-x-1 justify-center items-center p-0 [&[data-state=open]]:bg-primary [&[data-state=open]]:text-primary-foreground'
+                                        className='rounded-full gap-x-1 justify-center items-center p-0 data-[state=open]:bg-primary data-[state=open]:text-primary-foreground'
                                         variant='secondary'
                                     >
                                         <Filter className='size-4' />
@@ -229,4 +237,6 @@ const Plots = () => {
     )
 }
 
-export default Plots
+export default function PlotPage() {
+    return <Plots />
+}

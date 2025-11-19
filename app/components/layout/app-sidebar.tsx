@@ -9,6 +9,7 @@ import {
     Home,
     Map,
     Settings2,
+    Shield,
     Square,
     Thermometer,
     Zap
@@ -20,12 +21,13 @@ import { NavUser } from '@/components/layout/nav-user'
 import { TeamSwitcher } from '@/components/layout/team-switcher'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { useIsActive } from '@/lib/lib'
+import { useAuthContext } from '@/components/providers/auth-provider'
 
 const data = {
     user: {
         name: 'Nông dân',
         email: 'farmer@smartfarming.com',
-        avatar: '/avatars/farmer.jpg'
+        avatar: 'https:/ui.shadcn.com/avatars/shadcn.jpg'
     },
     teams: [
         {
@@ -64,7 +66,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const isDashboardActive = useIsActive(['/dashboard'])
+    const { profile } = useAuthContext()
+    const isDashboardActive = useIsActive(['/'])
     const isMonitoringActive = useIsActive(['/monitoring'])
     const isPlotsActive = useIsActive(['/plots'])
     const isAutomationActive = useIsActive(['/automation'])
@@ -72,29 +75,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const isAiPredictionsActive = useIsActive(['/ai-predictions'])
     const isReportsActive = useIsActive(['/reports'])
     const isAdminActive = useIsActive(['/admin'])
+    const isPermissionsActive = useIsActive(['/permissions'])
+    const isRolesActive = useIsActive(['/roles'])
 
     const navMain = [
         {
             title: 'Tổng quan',
-            url: '/dashboard',
+            url: '/',
             icon: Home,
             isActive: isDashboardActive,
             items: [
                 {
                     title: 'Dashboard chính',
-                    url: '/dashboard/main'
+                    url: '/'
                 },
                 {
                     title: 'Trạng thái hệ thống',
-                    url: '/dashboard/status'
+                    url: '/status'
                 },
                 {
                     title: 'Thống kê nhanh',
-                    url: '/dashboard/quick-stats'
+                    url: '/quick-stats'
                 },
                 {
                     title: 'Hoạt động gần đây',
-                    url: '/dashboard/recent-activity'
+                    url: '/recent-activity'
                 }
             ]
         },
@@ -254,7 +259,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             items: [
                 {
                     title: 'Quản lý người dùng',
-                    url: '/admin/users'
+                    url: '/users'
                 },
                 {
                     title: 'Quản lý thiết bị',
@@ -267,6 +272,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: 'Cài đặt hệ thống',
                     url: '/admin/settings'
+                }
+            ]
+        },
+        {
+            title: 'Quản trị phân quyền',
+            url: '/permissions',
+            icon: Shield,
+            isActive: isPermissionsActive || isRolesActive,
+            items: [
+                {
+                    title: 'Danh sách quyền',
+                    url: '/permissions'
+                },
+                {
+                    title: 'Danh sách vai trò',
+                    url: '/roles'
                 }
             ]
         }
@@ -282,7 +303,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                {profile && <NavUser user={profile.user} />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

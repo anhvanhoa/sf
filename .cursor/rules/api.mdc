@@ -1,0 +1,70 @@
+---
+description: Guidance for using the shared Axios API client and helpers
+globs:
+  - app/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# API Rule (Axios)
+
+Use the preconfigured Axios client and helpers from `app/lib/axios.ts` for all HTTP calls. Do not use `fetch` directly in application code.
+
+## Golden rules
+- Always import from `@/lib/axios` (path alias) or relative `app/lib/axios.ts` where needed.
+- Prefer the convenience helpers on `api` (`get/post/put/patch/delete`) with proper generics.
+- Errors are normalized. Wrap calls in try/catch at boundaries (UI/mutations) and surface user-friendly messages.
+- Authentication token is read from `localStorage` and added automatically; a 401 will clear token and redirect to `/auth/login`.
+- Respect environment base URL `VITE_API_URL`. Avoid hardcoding `/api` paths when possible; use relative resource paths like `/users`.
+
+## Imports
+```ts
+import { api } from '@/lib/axios'
+```
+
+## Basic usage
+```ts
+// GET with typing
+type User = { id: string; name: string; email: string }
+const users = await api.get<User[]>('/users')
+
+// POST with body
+const created = await api.post<User>('/users', { name: 'Jane', email: 'j@example.com' })
+
+// PUT/PATCH/DELETE
+await api.put<User>(`/users/${id}`, { name: 'New' })
+await api.patch<User>(`/users/${id}`, { name: 'Patch' })
+await api.delete<void>(`/users/${id}`)
+```
+
+## With query params / headers
+```ts
+const data = await api.get<User[]>('/users', { params: { status: 'active' } })
+const secure = await api.get<User>('/me', { headers: { 'X-Trace': '1' } })
+```
+
+## File upload
+```ts
+const form = new FormData()
+form.append('file', file)
+await api.post<{ url: string }>('/upload', form, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
+```
+
+## Error handling (UI boundary)
+```ts
+try {
+  const users = await api.get<User[]>('/users')
+} catch (err) {
+  const message = err instanceof Error ? err.message : 'Request failed'
+  // show toast or set component error state
+}
+```
+
+## Do not
+- Do not import Axios directly; use the shared client and `api` helpers.
+- Do not manually attach Authorization headers; the interceptor handles it.
+- Do not swallow errors; propagate or render a clear message.
+
+## Reference
+- Client and helpers: `app/lib/axios.ts`

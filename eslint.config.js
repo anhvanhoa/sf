@@ -21,7 +21,19 @@ export default tseslint.config([
         },
         rules: {
             'react-refresh/only-export-components': 'off',
-            'no-empty-pattern': 'off'
+            'no-empty-pattern': 'off',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    args: 'all',
+                    argsIgnorePattern: '^_',
+                    caughtErrors: 'all',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    ignoreRestSiblings: true
+                }
+            ]
         }
     }
 ])

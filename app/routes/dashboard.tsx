@@ -1,9 +1,13 @@
 import type { Route } from './+types/dashboard'
+import DashboardContent from '@/components/page/auth/dashboard'
 
 export function meta({}: Route.MetaArgs) {
-    return [{ title: 'Hello' }, { name: 'description', content: 'Welcome to React Router!' }]
+    return [
+        { title: 'Dashboard - Nông nghiệp thông minh' },
+        { name: 'description', content: 'Tổng quan hệ thống nông nghiệp thông minh' }
+    ]
 }
 
-export default function Home() {
-    return <div className='flex flex-1 flex-col gap-4 p-4 pt-4'>Home</div>
+export default function Dashboard() {
+    return <DashboardContent />
 }

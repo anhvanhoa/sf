@@ -1,0 +1,7 @@
+export { default as AuthApp } from './auth-app'
+export { default as HomePage } from './home-page'
+export { default as RegisterForm } from './register-form'
+export { default as LoginForm } from './login-form'
+export { default as ForgotPasswordForm } from './forgot-password-form'
+export { default as Dashboard } from './dashboard'
+export { default as ChangePasswordForm } from './change-password-form'

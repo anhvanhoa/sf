@@ -1,0 +1,77 @@
+---
+description: Guidance for using TanStack Query with shared helpers and keys
+globs:
+  - app/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Query Rule (TanStack Query)
+
+Use the shared Query Client provider and helper utilities for data fetching and mutations.
+
+## Setup
+- Provider is defined at `app/components/providers/query-provider.tsx` and is already wired in `app/root.tsx`.
+- Client configuration lives in `app/lib/query-client.ts` (sensible defaults, retry/staleTime).
+
+## Use shared utilities (`app/lib/queries.ts`)
+- Import `queryKeys` for consistent cache keys.
+- Prefer `createQueryHook` and `createMutationHook` to standardize patterns.
+- For HTTP calls, always use `api` from `@/lib/axios`.
+
+### Query examples
+```ts
+import { useQuery } from '@tanstack/react-query'
+import { queryKeys } from '@/lib/queries'
+import { api } from '@/lib/axios'
+
+// Inline query
+const { data, isLoading, error } = useQuery({
+  queryKey: queryKeys.users(),
+  queryFn: () => api.get<User[]>('/users'),
+  staleTime: 5 * 60 * 1000,
+})
+
+// Using factory
+import { createQueryHook } from '@/lib/queries'
+export const useUsers = createQueryHook<User[]>(
+  queryKeys.users(),
+  () => api.get('/users'),
+  { staleTime: 5 * 60 * 1000 }
+)
+```
+
+### Mutation examples
+```ts
+import { createMutationHook, queryKeys } from '@/lib/queries'
+import { api } from '@/lib/axios'
+
+export const useCreateUser = createMutationHook<User, { name: string; email: string }>(
+  (payload) => api.post('/users', payload),
+  {
+    invalidateQueries: queryKeys.users(),
+  }
+)
+```
+
+## Best practices
+- Always specify a `queryKey` using `queryKeys` factories to avoid collisions.
+- Use `enabled` to gate queries until required IDs/params are present.
+- Tune `staleTime` to reduce refetch noise; avoid 0 unless necessary.
+- Invalidate relevant keys after successful mutations.
+- For optimistic updates, prefer the `useOptimisticMutation` helper from `app/hooks/use-api.ts`.
+
+## Error and loading UX
+- Always handle `isLoading`/`isPending` and `error` states in UI.
+- For global handling, consider route-level error boundaries already in `app/root.tsx`.
+
+## SSR considerations
+- Defaults in `query-client.ts` are SSR-friendly. Avoid immediate client refetches by setting a sensible `staleTime`.
+
+## Do not
+- Do not bypass `api` for HTTP; keep a single transport layer.
+- Do not hardcode string query keys; always use `queryKeys`.
+
+## Reference
+- Query helpers and keys: `app/lib/queries.ts`
+- Axios transport: `app/lib/axios.ts`
+- Query client: `app/lib/query-client.ts`
